@@ -60,7 +60,7 @@ class ScoreBoardTest extends TestCase
         $storage = $this->getStartedGameStorageMock();
 
         $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('Home team is not in the list of teams');
+        $this->expectExceptionMessage('Away team is not in the list of teams');
 
         $scoreBoard = new ScoreBoard($storage);
         $scoreBoard->startGame('Mexico', 'Mexico1');
