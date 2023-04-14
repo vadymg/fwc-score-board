@@ -27,32 +27,21 @@ require_once __DIR__ . '/vendor/autoload.php';
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use FWC\ScoreBoard\Services\BoardResultService;
-use FWC\ScoreBoard\Services\BoardService;
-use FWC\ScoreBoard\Services\GameService;
-use FWC\ScoreBoard\Services\TeamService;
-use FWC\ScoreBoard\Storage\FileStorage;
+// The list of teams can be fetched from a database or any other source
+$teams = FWC\ScoreBoard\Team::getTeamList();
 
-$fileStorage = new FileStorage('data.txt');
-$teamService =  new TeamService(['Mexico', 'Canada', 'Spain', 'Brazil', 'Germany', 'France', 'Uruguay', 'Italy', 'Argentina', 'Australi']);
-$gameService = new GameService($teamService);
-$boardService = new BoardService($gameService, $fileStorage);
-$boardService->startGame('Mexico', 'Canada');
-$boardService->startGame('Spain', 'Brazil');
-$boardService->startGame('Germany', 'France');
-$boardService->startGame('Uruguay', 'Italy');
-$boardService->startGame('Argentina', 'Australi');
+$storage = new FWC\ScoreBoard\RedisStorage();
+$scoreBoard = new FWC\ScoreBoard\ScoreBoard($storage);
 
-foreach ($boardService->getGames() as $game) {
-    $boardService->updateScoreById($game->id, rand(0, 10), rand(0, 10));
-}
+$scoreBoard->startGame('Mexico', 'Canada');
+$scoreBoard->startGame('Germany', 'France');
 
-$boardResultService = new BoardResultService($boardService);
-$boardResult = $boardResultService->getBoardResult();
+$scoreBoard->updateScore('Mexico', 'Canada', 0, 5);
+$scoreBoard->finishGame('Germany', 'France');
 
-foreach ($boardResult['games'] as $game) {
+foreach ($scoreBoard->getGames() as $game) {
     echo '<pre>';
-    echo $game['home'] . ' ' . $game['homeScore']  . ' - ' . $game['away'] . ' ' . $game['awayScore'];
+    echo $game['homeTeam'] . ' ' . $game['homeScore']  . ' - ' . $game['awayTeam'] . ' ' . $game['awayScore'];
     echo '</pre>';
 }
 ```
@@ -70,7 +59,7 @@ composer require --dev phpunit/phpunit
 Run the tests by executing the following command in your project's root directory:
 
 ```bash
-vendor/bin/phpunit --colors=always
+vendor/bin/phpunit
 ```
 
 PHPUnit will run the tests and report the results, indicating whether the tests passed or failed.

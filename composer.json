@@ -3,7 +3,8 @@
     "description": "FWC Score Board as a simple PHP library",
     "type": "library",
     "require": {
-        "phpunit/phpunit": "^10.0"
+        "phpunit/phpunit": "^10.0",
+        "predis/predis": "^2.1"
     },
     "license": "MIT",
     "autoload": {
